@@ -2,6 +2,7 @@ local COLOR_HEADER_BG      = lcd.RGB(0, 90, 200)   -- blue (similar to EdgeTX UI
 local COLOR_HEADER_TEXT    = WHITE                 -- white text
 local COLOR_SIDE_SHAPE     = lcd.RGB(0, 70, 160)   -- darker blue for polygon
 local COLOR_COUNTER_TEXT   = WHITE
+local COLOR_WARNING_TEXT   = lcd.RGB(0xFF, 0xBD, 0xBC)
 
 local function getLineSpacing()
     if adsbinav.radio.highRes then
@@ -26,7 +27,7 @@ local function clipValue(val, min, max)
     return val
 end
 
-local function drawScreenTitle(icon, screenTitle, counter)
+local function drawScreenTitle(icon, screenTitle, statusText, counter)
     local headerHeight = 45
 
     ----------------------------------------------------------------
@@ -64,6 +65,14 @@ local function drawScreenTitle(icon, screenTitle, counter)
     -- Draw screen title
     ----------------------------------------------------------------
     lcd.drawText(60, 3, screenTitle, COLOR_HEADER_TEXT)
+
+    ----------------------------------------------------------------
+    -- Draw status
+    ----------------------------------------------------------------
+    if statusText then
+        local textWidth = #screenTitle * 8
+        lcd.drawText(60 + textWidth + 8, 3, statusText, COLOR_WARNING_TEXT + SMLSIZE)
+    end
 
     ----------------------------------------------------------------
     -- Draw message counter on the right

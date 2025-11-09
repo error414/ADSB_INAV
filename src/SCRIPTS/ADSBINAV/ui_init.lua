@@ -24,7 +24,7 @@ local function init()
         else
             -- received correct API version, proceed
             adsbinav.apiVersion = apiVersion
-            adsbinav.print("got version %s", adsbinav.apiVersion)
+            --[[adsbinav.print("got version %s", adsbinav.apiVersion)]]
             collectgarbage()
             return true
         end
