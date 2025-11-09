@@ -1,0 +1,85 @@
+local mspHelper = adsbinav.executeScript("MSP/mspHelper")
+
+local function getAdsbList(callback, callbackParam)
+    local message = {
+        command = 0x2090, -- MSP2_ADSB_VEHICLE_LIST
+        processReply = function(self, buf)
+
+          --[[  adsbinav.print("-----")
+            adsbinav.print("getAdsbList (%d B)", #buf)
+            for i = 1,#buf do
+                adsbinav.print("  ["..string.format("%u", i).."]:  0x"..string.format("%X", buf[i]))
+            end
+            adsbinav.print("-----")]]
+
+            buf.offset = 1
+
+            local maxVehicles = mspHelper.readU8(buf)
+            local callsignLen = mspHelper.readU8(buf)
+            local vehiclesMessagesTotal  = mspHelper.readU32(buf)
+            local heartbeatMessagesTotal = mspHelper.readU32(buf)
+            local vehicles = {}
+
+            for i = 1, maxVehicles do
+                local callsign = mspHelper.readText(buf, callsignLen)
+                local icao     = mspHelper.readU32(buf)
+                local lat      = mspHelper.readU32(buf)
+                local lon      = mspHelper.readU32(buf)
+                local alt      = mspHelper.readU32(buf) / 100 -- cm -> m
+                local heading  = mspHelper.readU16(buf)
+                local tslc     = mspHelper.readU8(buf)
+                local emitter  = mspHelper.readU8(buf)
+                local ttl      = mspHelper.readU8(buf)
+
+                table.insert(vehicles, {
+                    callsign = callsign or "",
+                    icao = icao or 0x00,
+                    lat = lat or 0x00,
+                    lon = lon or 0x00,
+                    alt = alt or 0x00,
+                    heading = heading or 0x00,
+                    tslc = tslc or 0x00,
+                    emitterType = emitter or 0x01,
+                    ttl = ttl
+                })
+            end
+
+            local result = {
+                header = header,
+                maxVehicles = maxVehicles,
+                callsignLen = callsignLen,
+                vehiclesMessagesTotal = vehiclesMessagesTotal,
+                heartbeatMessagesTotal = heartbeatMessagesTotal,
+                vehicles = vehicles
+            }
+            callback(callbackParam, result)
+        end,
+        simulatorResponse = {
+            0x05, 0x09, 0x5D, 0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00,
+            0x44, 0x46, 0x4B, 0x4A, 0x4D, 0x00, 0x00, 0x00, 0x00, 0xAE,
+            0x64, 0x3D, 0x00, 0x40, 0xF1, 0x4B, 0x1D, 0x10, 0x39, 0x01,
+            0x0A, 0xE6, 0xF0, 0x0D, 0x00, 0x3F, 0x01, 0x02, 0x01, 0x08,
+            0x52, 0x59, 0x52, 0x35, 0x33, 0x48, 0x58, 0x00, 0x00, 0xE7,
+            0xAD, 0x4C, 0x00, 0xA0, 0xA6, 0x3A,
+
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+        }
+    }
+    adsbinav.mspQueue:add(message)
+end
+
+
+return {
+    read = getAdsbList,
+}
