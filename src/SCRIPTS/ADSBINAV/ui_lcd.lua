@@ -23,8 +23,6 @@ local function fetchAdsbData()
         lastRunTS = adsbinav.clock()
     end
 
-    adsbinav.mspQueue:processQueue()
-
     if adsbinav.mspQueue:isProcessed() and uiData.apiAdsbData then
         uiData.ADSBMessagesCount = uiData.ADSBMessagesCount + 1
     end
@@ -40,6 +38,8 @@ local function run_ui(event)
         init = nil
         uiState = uiStatus.mainPage
     elseif uiState == uiStatus.mainPage then
+
+        adsbinav.mspQueue:processQueue()
 
         ----------------------------------------------------------------
         -- No telemetry

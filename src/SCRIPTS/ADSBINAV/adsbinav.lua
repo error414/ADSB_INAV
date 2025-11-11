@@ -1,5 +1,5 @@
 adsbinav = {
-    luaVersion = "0.0.1",
+    luaVersion = "0.0.2",
     baseDir = "/SCRIPTS/ADSBINAV/",
     runningInSimulator = string.sub(select(2, getVersion()), -4) == "simu",
 

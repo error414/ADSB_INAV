@@ -13,7 +13,7 @@ It visualizes nearby air traffic based on data. It needs to installed ADSB recei
 ## Important Information
 - ❗ **Only color transmitters are supported** – black-and-white transmitters are **not supported**.
 - ⚙️ **Supported protocols:**
-    - **CRSF** (tested)
+    - **CRSF** (tested via ELRS) ELRS 3.6.0 or newer
     - **SmartPort** (untested)
 
 ## Installation
